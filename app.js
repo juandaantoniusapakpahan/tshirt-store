@@ -15,7 +15,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(cookieParser());
-app.use(fileUpload());
+app.use(
+  fileUpload({
+    useTempFiles: true,
+    tempFileDir: "/tmp/",
+  })
+);
+
+// ejs
+app.set("view engine", "ejs");
 
 // Morgan Middleware
 app.use(morgan("tiny"));
@@ -26,5 +34,9 @@ const user = require("./routes/user");
 
 app.use("/api/v1", home);
 app.use("/api/v1", user);
+
+app.use("/signuptest", (req, res) => {
+  res.render("signup.ejs");
+});
 
 module.exports = app;
