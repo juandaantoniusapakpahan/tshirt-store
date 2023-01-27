@@ -150,3 +150,70 @@ exports.passwordReset = BigPromise(async (req, res, next) => {
 
   cookieToken(user, res);
 });
+
+exports.userDashBoard = BigPromise(async (req, res, next) => {
+  const user = await User.findById(req.user.id);
+
+  user.password = undefined;
+  res.status(200).json({
+    success: true,
+    user,
+  });
+});
+
+exports.passwordUpdate = BigPromise(async (req, res, next) => {
+  const userId = req.user.id;
+
+  const user = await User.findById(userId).select("+password");
+
+  const checkOldPassword = await user.isValidatedPassword(req.body.oldPassword);
+
+  if (!checkOldPassword) {
+    return next(new CustomError("Old Password is incorrect!"));
+  }
+
+  user.password = req.body.newPassword;
+
+  await user.save();
+
+  cookieToken(user, res);
+});
+
+exports.updateUser = BigPromise(async (req, res, next) => {
+  const newPayload = {
+    name: req.body.name,
+    email: req.body.email,
+  };
+
+  if (req.files) {
+    const userId = await User.findById(req.user.id);
+    const photoId = userId.photo.id;
+
+    await cloudinary.v2.uploader.destroy(photoId);
+
+    const uploadPhoto = await cloudinary.v2.uploader.upload(
+      req.files.photo.tempFilePath,
+      {
+        folder: "users",
+        width: 150,
+        crop: "scale",
+      }
+    );
+
+    newPayload.photo = {
+      id: uploadPhoto.public_id,
+      secure_url: uploadPhoto.secure_url,
+    };
+  }
+
+  const user = await User.findByIdAndUpdate(req.user.id, newPayload, {
+    new: true,
+    runValidators: true,
+    useFindAndModify: true,
+  });
+
+  res.statu(200).json({
+    success: true,
+    message: "Profil berhasil diubah",
+  });
+});
