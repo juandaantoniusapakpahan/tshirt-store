@@ -212,7 +212,7 @@ exports.updateUser = BigPromise(async (req, res, next) => {
     useFindAndModify: true,
   });
 
-  res.statu(200).json({
+  res.status(200).json({
     success: true,
     message: "Profil berhasil diubah",
   });
