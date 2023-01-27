@@ -17,7 +17,7 @@ exports.signup = BigPromise(async (req, res, next) => {
     return next(new CustomError("name, email and password are required", 400));
   }
 
-  let file = req.files.samplefile;
+  let file = req.files.photo;
   result = await cloudinary.v2.uploader.upload(file.tempFilePath, {
     folder: "users",
     width: 150,
@@ -215,5 +215,15 @@ exports.updateUser = BigPromise(async (req, res, next) => {
   res.status(200).json({
     success: true,
     message: "Profil berhasil diubah",
+    user,
+  });
+});
+
+exports.adminUser = BigPromise(async (req, res, next) => {
+  const users = await User.find({ role: "user" });
+
+  res.status(200).json({
+    success: true,
+    users,
   });
 });
