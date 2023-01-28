@@ -227,3 +227,52 @@ exports.adminUser = BigPromise(async (req, res, next) => {
     users,
   });
 });
+
+exports.getUserById = BigPromise(async (req, res, next) => {
+  const user = await User.findById(req.params.id);
+
+  if (!user) {
+    return next(new CustomError("User not found", 404));
+  }
+
+  res.status(200).json({
+    success: true,
+    user,
+  });
+});
+
+exports.adminUpdateUserDetails = BigPromise(async (req, res, next) => {
+  const payload = {
+    name: req.body.name,
+    email: req.body.email,
+    role: req.body.role,
+  };
+
+  const user = await User.findByIdAndUpdate(req.params.id, payload, {
+    new: true,
+    runValidators: true,
+    useFindAndModify: true,
+  });
+
+  res.status(200).json({
+    success: true,
+    user,
+  });
+});
+
+exports.adminDeleteUser = BigPromise(async (req, res, next) => {
+  const user = await User.findById(req.params.id);
+
+  if (!user) {
+    return next(new CustomError("not found User!!", 404));
+  }
+
+  await cloudinary.v2.uploader.destroy(user.photo.id);
+
+  user.remove();
+
+  res.status(200).json({
+    success: true,
+    message: "Success delete user!!",
+  });
+});

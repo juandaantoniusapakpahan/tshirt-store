@@ -12,6 +12,9 @@ const {
   passwordUpdate,
   updateUser,
   adminUser,
+  getUserById,
+  adminUpdateUserDetails,
+  adminDeleteUser,
 } = require("../controllers/userController");
 
 /** Middleware LoggedIn */
@@ -31,5 +34,11 @@ routes.route("/userdashboard/update").put(isLoggedIn, updateUser);
 routes
   .route("/admin/users")
   .get(isLoggedIn, customRoles("admin", "manager"), adminUser);
+
+routes
+  .route("/admin/user/:id")
+  .get(isLoggedIn, customRoles("admin"), getUserById)
+  .put(isLoggedIn, customRoles("admin"), adminUpdateUserDetails)
+  .delete(isLoggedIn, customRoles("admin"), adminDeleteUser);
 
 module.exports = routes;
