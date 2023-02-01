@@ -2,6 +2,7 @@ const CustomError = require("../utils/customError");
 const BigPromise = require("../middlewares/bigPromise");
 const Product = require("../models/product");
 const cloudinary = require("cloudinary");
+const WhereClause = require("../utils/whereClause");
 
 exports.addProduct = BigPromise(async (req, res, next) => {
   const imageArray = [];
@@ -33,5 +34,29 @@ exports.addProduct = BigPromise(async (req, res, next) => {
   res.status(201).json({
     success: true,
     product,
+  });
+});
+
+exports.getAllProduct = BigPromise(async (req, res, next) => {
+  const resultPerPage = 2;
+  const totalcountProduct = await Product.countDocuments();
+
+  const productsResunt = new WhereClause(Product.find(), req.query)
+    .search()
+    .filter();
+
+  if (!productsResunt) {
+    return next(new CustomError("NonFound Data", 400));
+  }
+  const filteredProductNumber = productsResunt.length;
+
+  productsResunt.pager(resultPerPage);
+  const products = await productsResunt.base;
+
+  res.status(200).json({
+    success: true,
+    products,
+    filteredProductNumber,
+    totalcountProduct,
   });
 });
