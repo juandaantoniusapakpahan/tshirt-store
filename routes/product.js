@@ -1,8 +1,9 @@
 const express = require("express");
 const router = express.Router();
 
-const { showProductTest } = require("../controllers/productController");
+const { addProduct } = require("../controllers/productController");
+const { customRoles, isLoggedIn } = require("../middlewares/user");
 
-router.route("/test/product").get(showProductTest);
+router.route("/product").post(isLoggedIn, customRoles("admin"), addProduct);
 
 module.exports = router;

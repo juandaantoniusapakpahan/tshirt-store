@@ -5,7 +5,7 @@ const morgan = require("morgan"); // Untuk menampilkan Method dan url di TERMINA
 const cookieParser = require("cookie-parser");
 const fileUpload = require("express-fileupload"); // Digunakan untuk upload file
 
-// Swegger
+// SWEGGER
 const swagger = require("swagger-ui-express");
 const YAML = require("yamljs");
 const SwaagerDocument = YAML.load("./swagger.yaml");
@@ -22,17 +22,18 @@ app.use(
   })
 );
 
-// ejs
+// EJS
 app.set("view engine", "ejs");
 
-// Morgan Middleware
+// MORGAN MIDDLEWARE
 app.use(morgan("tiny"));
 
-// Routes Middleware
+// ROUTE MIDDLERWARE
 const home = require("./routes/home");
 const user = require("./routes/user");
 const product = require("./routes/product");
 
+// API ROUTE
 app.use("/api/v1", home);
 app.use("/api/v1", user);
 app.use("/api/v1", product);
