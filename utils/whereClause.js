@@ -21,6 +21,7 @@ class WhereClause {
         }
       : {};
     this.base = this.base.find({ ...searchword });
+    console.log(searchword);
     return this;
   }
 

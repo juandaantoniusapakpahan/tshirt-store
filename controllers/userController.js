@@ -269,7 +269,7 @@ exports.adminDeleteUser = BigPromise(async (req, res, next) => {
 
   await cloudinary.v2.uploader.destroy(user.photo.id);
 
-  user.remove();
+  await user.remove();
 
   res.status(200).json({
     success: true,
