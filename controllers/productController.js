@@ -142,6 +142,48 @@ exports.deleteProduct = BigPromise(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    message: "Success delete product",
+    message: "Product was deleted!",
+  });
+});
+
+exports.addReview = BigPromise(async (req, res, next) => {
+  const { rating, comment, productId } = req.body;
+
+  const product = await Product.findById(productId);
+
+  if (!product) {
+    return next(new CustomError("No product found"), 404);
+  }
+
+  const newReview = {
+    user: req.user._id,
+    name: req.user.name,
+    rating: Number(rating),
+    comment,
+  };
+
+  const alreadyReview = await product.reviews.find(
+    (rev) => rev.user.toString() === req.user._id.toString()
+  );
+
+  if (alreadyReview) {
+    product.reviews.forEach((reviews) => {
+      reviews.comment = comment;
+      reviews.rating = rating;
+    });
+  } else {
+    product.reviews.push(newReview);
+    product.numberOfReviews = product.reviews.length;
+  }
+
+  product.ratings =
+    product.reviews.reduce((acc, review) => review.rating + acc, 0) /
+    product.reviews.length;
+
+  await product.save({ validateBeforeSave: false });
+
+  res.status(200).json({
+    success: true,
+    message: "Berhasil menambahakan review",
   });
 });

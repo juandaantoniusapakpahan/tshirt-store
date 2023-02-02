@@ -9,6 +9,7 @@ const {
   adminGetAllProduct,
   updateProduct,
   deleteProduct,
+  addReview,
 } = require("../controllers/productController");
 
 // role and isloggedIn middleware
@@ -31,5 +32,8 @@ router
 
 // user route
 router.route("/product").get(getAllProduct);
+router
+  .route("/product/review")
+  .post(isLoggedIn, customRoles("user"), addReview);
 
 module.exports = router;
